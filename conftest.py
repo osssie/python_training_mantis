@@ -22,10 +22,11 @@ def app(request):
     global fixture
     browser = request.config.getoption("--browser")
     web_config = load_config(request.config.getoption("--target"))['web']
+    creds = load_config(request.config.getoption("--target"))["webadmin"]
     if fixture is None or not fixture.is_valid():
         fixture = Application(browser=browser, baseurl=web_config['baseUrl'])
+    fixture.session.ensure_login(username=creds["username"], password=creds["password"])
     return fixture
-
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -37,21 +38,21 @@ def stop(request):
     return fixture
 
 
-@pytest.fixture(scope="session")
-def orm(request):
-    db_config = load_config(request.config.getoption("--target"))['db']
-    dbfixture = ORMFixture(host=db_config["host"], name=db_config["name"], user=db_config["user"],
-                           password=db_config["password"])
-
-    def fin():
-        dbfixture.destroy()
-    request.addfinalizer(fin)
-
-
 def pytest_addoption(parser):
     parser.addoption("--browser", action="store", default="firefox")
     parser.addoption("--target", action="store", default="config/target.json")
     # parser.addoption("--check_ui", action="store_true")
+
+
+# @pytest.fixture(scope="session")
+# def orm(request):
+#     db_config = load_config(request.config.getoption("--target"))['db']
+#     dbfixture = ORMFixture(host=db_config["host"], name=db_config["name"], user=db_config["user"],
+#                            password=db_config["password"])
+
+    # def fin():
+    #     dbfixture.destroy()
+    # request.addfinalizer(fin)
 
 
 # @pytest.fixture(scope="session")
