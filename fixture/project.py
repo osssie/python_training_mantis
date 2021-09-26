@@ -36,7 +36,7 @@ class ProjectHelper:
     def count_projects(self):
         wd = self.app.wd
         self.open_project_page()
-        return len(wd.find_elements_by_xpath("//div[2]/table/tbody/tr")[2:])
+        return len(wd.find_elements_by_xpath("//div[2]/table/tbody/tr"))
 
     def get_projects_list(self):
         if self.project_cache is None:
@@ -53,14 +53,15 @@ class ProjectHelper:
                 self.project_cache.append(scanned_project)
             return list(self.project_cache)
 
-    def select_project_by_id(self, id):
+    def select_project_by_index(self, index):
         wd = self.app.wd
-        wd.find_element_by_xpath("//a[contains(@href, 'manage_proj_edit_page.php?project_id=%s')]" % id).click()
+        selected_project = wd.find_elements_by_xpath("//div[2]/table/tbody/tr")[index]
+        selected_project.find_element_by_xpath("./td[1]/a").click()
 
-    def delete_project_by_id(self, id):
+    def delete_project_by_index(self, index):
         wd = self.app.wd
         self.open_project_page()
-        self.select_project_by_id(id)
+        self.select_project_by_index(index)
         wd.find_element_by_xpath("//input[@value='Удалить проект']").click()
         wd.find_element_by_xpath("//input[@value='Удалить проект']").click()
         self.project_cache = None
