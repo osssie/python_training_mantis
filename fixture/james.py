@@ -1,5 +1,6 @@
 from telnetlib import Telnet
 
+
 class JamesHelper:
 
     def __init__(self, app):
